@@ -1,4 +1,4 @@
-package concert_reservation;
+package concertreservation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
