@@ -32,9 +32,8 @@ public class UserPointConcurrencyTest {
     void chargePointConcurrencyFailTest() throws InterruptedException {
         //given
         int threadCount = 1000;
-        long userId = 1L;
 
-        userRepository.save(new User("이름1","번호",0));
+        User user = userRepository.save(new User("이름1", "번호", 0));
 
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
@@ -42,16 +41,16 @@ public class UserPointConcurrencyTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    userService.chargePoint(userId, 100);
+                    userService.chargePoint(user.getId(), 100);
                 } finally {
                     latch.countDown();
                 }
             });
         }
         latch.await();
-        User user = userRepository.findById(userId).orElseThrow();
+        User savedUser = userRepository.findById(user.getId()).orElseThrow();
         //then
-        assertThat(user.getPoint()).isLessThan(100000);
+        assertThat(savedUser.getPoint()).isLessThan(100000);
     }
 
     @Test
@@ -61,9 +60,8 @@ public class UserPointConcurrencyTest {
 
         //given
         int threadCount = 1000;
-        long userId = 1L;
 
-        userRepository.save(new User("이름1","번호",0));
+        User user = userRepository.save(new User("이름1", "번호", 0));
 
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
@@ -71,19 +69,19 @@ public class UserPointConcurrencyTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    userService.chargePointPessimisticLock(userId, 100);
+                    userService.chargePointPessimisticLock(user.getId(), 100);
                 } finally {
                     latch.countDown();
                 }
             });
         }
         latch.await();
-        User user = userRepository.findById(userId).orElseThrow();
+        User savedUser = userRepository.findById(user.getId()).orElseThrow();
 
         long endTime = System.currentTimeMillis();
         System.out.println("테스트 실행 시간: " + (endTime - startTime) + "ms");
         //then
-        assertThat(user.getPoint()).isEqualTo(100000);
+        assertThat(savedUser.getPoint()).isEqualTo(100000);
     }
 
     @Test
@@ -93,9 +91,8 @@ public class UserPointConcurrencyTest {
 
         //given
         int threadCount = 1000;
-        long userId = 1L;
 
-        userRepository.save(new User("이름1","번호",0));
+        User user = userRepository.save(new User("이름1", "번호", 0));
 
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
@@ -103,18 +100,18 @@ public class UserPointConcurrencyTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    userFacade.chargePointOptimisticLock(userId, 100);
+                    userFacade.chargePointOptimisticLock(user.getId(), 100);
                 } finally {
                     latch.countDown();
                 }
             });
         }
         latch.await();
-        User user = userRepository.findById(userId).orElseThrow();
+        User savedUser = userRepository.findById(user.getId()).orElseThrow();
 
         long endTime = System.currentTimeMillis();
         System.out.println("테스트 실행 시간: " + (endTime - startTime) + "ms");
         //then
-        assertThat(user.getPoint()).isEqualTo(100000);
+        assertThat(savedUser.getPoint()).isEqualTo(100000);
     }
 }
