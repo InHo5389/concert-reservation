@@ -1,5 +1,7 @@
 package concertreservation.user.service;
 
+import concertreservation.common.exception.CustomGlobalException;
+import concertreservation.common.exception.ErrorType;
 import concertreservation.user.service.entity.PointHistory;
 import concertreservation.user.service.entity.PointStatus;
 import concertreservation.user.service.entity.User;
@@ -18,7 +20,7 @@ public class UserService {
 
     @Transactional
     public UserPointUpdateResponse chargePoint(Long userId, int point) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("회원이 없습니다."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_USER));
         user.chargePoint(point);
 
         PointHistory pointHistory = pointHistoryUpdater.savePointHistory(userId, point, PointStatus.CHARGE);
@@ -27,7 +29,7 @@ public class UserService {
 
     @Transactional
     public UserPointUpdateResponse chargePointPessimisticLock(Long userId, int point) {
-        User user = userRepository.findByIdWithPessimisticLock(userId).orElseThrow(() -> new RuntimeException("회원이 없습니다."));
+        User user = userRepository.findByIdWithPessimisticLock(userId).orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_USER));
         user.chargePoint(point);
 
         PointHistory pointHistory = pointHistoryUpdater.savePointHistory(userId, point, PointStatus.CHARGE);
@@ -37,7 +39,7 @@ public class UserService {
     @Transactional
     public UserPointUpdateResponse chargePointOptimisticLock(Long userId, int point) {
         User user = userRepository.findByIdWithOptimisticLock(userId)
-                .orElseThrow(() -> new RuntimeException("회원이 없습니다."));
+                .orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_USER));
         user.chargePoint(point);
 
         PointHistory pointHistory = pointHistoryUpdater.savePointHistory(userId, point, PointStatus.CHARGE);
@@ -46,7 +48,7 @@ public class UserService {
 
     @Transactional
     public UserPointUpdateResponse decreasePoint(Long userId, int point) {
-        User user = userRepository.findByIdWithPessimisticLock(userId).orElseThrow(() -> new RuntimeException("회원이 없습니다."));
+        User user = userRepository.findByIdWithPessimisticLock(userId).orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_USER));
         user.decreasePoint(point);
 
         PointHistory pointHistory = pointHistoryUpdater.savePointHistory(userId, point, PointStatus.USE);
@@ -54,7 +56,7 @@ public class UserService {
     }
 
     public UserPointReadResponse readPoint(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("회원이 없습니다."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_USER));
 
         return UserPointReadResponse.from(user);
     }
