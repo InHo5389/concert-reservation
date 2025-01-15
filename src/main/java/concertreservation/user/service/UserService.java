@@ -1,7 +1,10 @@
 package concertreservation.user.service;
 
+import concertreservation.user.service.entity.PointHistory;
+import concertreservation.user.service.entity.PointStatus;
 import concertreservation.user.service.entity.User;
-import concertreservation.user.service.response.UserPointResponse;
+import concertreservation.user.service.response.UserPointReadResponse;
+import concertreservation.user.service.response.UserPointUpdateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,39 +14,48 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PointHistoryUpdater pointHistoryUpdater;
 
     @Transactional
-    public UserPointResponse chargePoint(Long userId, int point) {
+    public UserPointUpdateResponse chargePoint(Long userId, int point) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("회원이 없습니다."));
         user.chargePoint(point);
-        return UserPointResponse.from(user);
+
+        PointHistory pointHistory = pointHistoryUpdater.savePointHistory(userId, point, PointStatus.CHARGE);
+        return UserPointUpdateResponse.from(user,pointHistory);
     }
 
     @Transactional
-    public UserPointResponse chargePointPessimisticLock(Long userId, int point) {
+    public UserPointUpdateResponse chargePointPessimisticLock(Long userId, int point) {
         User user = userRepository.findByIdWithPessimisticLock(userId).orElseThrow(() -> new RuntimeException("회원이 없습니다."));
         user.chargePoint(point);
-        return UserPointResponse.from(user);
+
+        PointHistory pointHistory = pointHistoryUpdater.savePointHistory(userId, point, PointStatus.CHARGE);
+        return UserPointUpdateResponse.from(user,pointHistory);
     }
 
     @Transactional
-    public UserPointResponse chargePointOptimisticLock(Long userId, int point) {
-
+    public UserPointUpdateResponse chargePointOptimisticLock(Long userId, int point) {
         User user = userRepository.findByIdWithOptimisticLock(userId)
                 .orElseThrow(() -> new RuntimeException("회원이 없습니다."));
         user.chargePoint(point);
-        return UserPointResponse.from(user);
+
+        PointHistory pointHistory = pointHistoryUpdater.savePointHistory(userId, point, PointStatus.CHARGE);
+        return UserPointUpdateResponse.from(user,pointHistory);
     }
 
     @Transactional
-    public UserPointResponse decreasePoint(Long userId, int point) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("회원이 없습니다."));
+    public UserPointUpdateResponse decreasePoint(Long userId, int point) {
+        User user = userRepository.findByIdWithPessimisticLock(userId).orElseThrow(() -> new RuntimeException("회원이 없습니다."));
         user.decreasePoint(point);
-        return UserPointResponse.from(user);
+
+        PointHistory pointHistory = pointHistoryUpdater.savePointHistory(userId, point, PointStatus.USE);
+        return UserPointUpdateResponse.from(user,pointHistory);
     }
 
-    public UserPointResponse readPoint(Long userId) {
+    public UserPointReadResponse readPoint(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("회원이 없습니다."));
-        return UserPointResponse.from(user);
+
+        return UserPointReadResponse.from(user);
     }
 }
