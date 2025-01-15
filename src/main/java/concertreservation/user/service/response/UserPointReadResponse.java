@@ -5,17 +5,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPointResponse {
+public class UserPointReadResponse {
 
     private Long userId;
     private String name;
     private int point;
 
-    public static UserPointResponse from(User user) {
-        UserPointResponse response = new UserPointResponse();
+    public static UserPointReadResponse from(User user) {
+        UserPointReadResponse response = new UserPointReadResponse();
         response.userId = user.getId();
         response.name = user.getName();
         response.point = user.getPoint();

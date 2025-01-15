@@ -20,7 +20,7 @@ public class User {
     private String phoneNumber;
     private int point;
 
-    @Version
+//    @Version
     private Long version;
 
     public User(String name, String phoneNumber, int point) {
