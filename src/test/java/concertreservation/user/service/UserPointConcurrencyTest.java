@@ -84,34 +84,37 @@ public class UserPointConcurrencyTest {
         assertThat(savedUser.getPoint()).isEqualTo(100000);
     }
 
-    @Test
-    @DisplayName("유저ID 1값이 0포인트를 가지고 있을때 동시에 1000번 포인트를 충전하면 100000포인트가 된다.")
-    void chargePointConcurrencySuccessTestByOptimisticLock() throws InterruptedException {
-        long startTime = System.currentTimeMillis();
-
-        //given
-        int threadCount = 1000;
-
-        User user = userRepository.save(new User("이름1", "번호", 0));
-
-        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-        CountDownLatch latch = new CountDownLatch(threadCount);
-        //when
-        for (int i = 0; i < threadCount; i++) {
-            executorService.submit(() -> {
-                try {
-                    userFacade.chargePointOptimisticLock(user.getId(), 100);
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
-        latch.await();
-        User savedUser = userRepository.findById(user.getId()).orElseThrow();
-
-        long endTime = System.currentTimeMillis();
-        System.out.println("테스트 실행 시간: " + (endTime - startTime) + "ms");
-        //then
-        assertThat(savedUser.getPoint()).isEqualTo(100000);
-    }
+    /**
+     * 낙관적 락을 사용하지 않을꺼라 테스트 시 시간을 아끼기 위하여 주석 처리
+     */
+//    @Test
+//    @DisplayName("유저ID 1값이 0포인트를 가지고 있을때 동시에 1000번 포인트를 충전하면 100000포인트가 된다.")
+//    void chargePointConcurrencySuccessTestByOptimisticLock() throws InterruptedException {
+//        long startTime = System.currentTimeMillis();
+//
+//        //given
+//        int threadCount = 1000;
+//
+//        User user = userRepository.save(new User("이름1", "번호", 0));
+//
+//        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+//        CountDownLatch latch = new CountDownLatch(threadCount);
+//        //when
+//        for (int i = 0; i < threadCount; i++) {
+//            executorService.submit(() -> {
+//                try {
+//                    userFacade.chargePointOptimisticLock(user.getId(), 100);
+//                } finally {
+//                    latch.countDown();
+//                }
+//            });
+//        }
+//        latch.await();
+//        User savedUser = userRepository.findById(user.getId()).orElseThrow();
+//
+//        long endTime = System.currentTimeMillis();
+//        System.out.println("테스트 실행 시간: " + (endTime - startTime) + "ms");
+//        //then
+//        assertThat(savedUser.getPoint()).isEqualTo(100000);
+//    }
 }
