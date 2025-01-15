@@ -6,6 +6,7 @@ import concertreservation.user.service.entity.PointStatus;
 import concertreservation.user.service.entity.User;
 import concertreservation.user.service.response.UserPointReadResponse;
 import concertreservation.user.service.response.UserPointUpdateResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,10 +41,13 @@ class UserServiceTest {
     void chargePoint() {
         //given
         User user = new User(1L, "이름1", "01012345678", 100);
-        given(userRepository.findById(any())).willReturn(Optional.of(user));
+        given(userRepository.findByIdWithPessimisticLock(any())).willReturn(Optional.of(user));
         int chargePoint = 500;
+        PointHistory pointHistory = new PointHistory(1L, chargePoint, PointStatus.CHARGE, LocalDateTime.now());
+        given(pointHistoryUpdater.savePointHistory(any(),anyInt(),any()))
+                .willReturn(pointHistory);
         //when
-        UserPointUpdateResponse response = userService.chargePoint(user.getId(), chargePoint);
+        UserPointUpdateResponse response = userService.chargePointPessimisticLock(user.getId(), chargePoint);
         //then
         assertThat(user.getPoint()).isEqualTo(600);
         assertThat(response).extracting("name", "point")
@@ -55,8 +59,11 @@ class UserServiceTest {
     void decreasePoint() {
         //given
         User user = new User(1L, "이름1", "01012345678", 1000);
-        given(userRepository.findById(any())).willReturn(Optional.of(user));
+        given(userRepository.findByIdWithPessimisticLock(any())).willReturn(Optional.of(user));
         int decreasePoint = 500;
+        PointHistory pointHistory = new PointHistory(1L, decreasePoint, PointStatus.USE, LocalDateTime.now());
+        given(pointHistoryUpdater.savePointHistory(any(),anyInt(),any()))
+                .willReturn(pointHistory);
         //when
         UserPointUpdateResponse response = userService.decreasePoint(user.getId(), decreasePoint);
         //then
@@ -70,9 +77,9 @@ class UserServiceTest {
     void savePointHistoryWhenChargingPoints() {
         //given
         User user = new User(1L, "이름1", "01012345678", 100);
-        given(userRepository.findById(any())).willReturn(Optional.of(user));
+        given(userRepository.findByIdWithPessimisticLock(anyLong())).willReturn(Optional.of(user));
         int chargePoint = 500;
-        given(pointHistoryUpdater.savePointHistory(any(), any(), any()))
+        given(pointHistoryUpdater.savePointHistory(anyLong(), anyInt(), any()))
                 .willReturn(new PointHistory(1L, user.getId(), chargePoint, PointStatus.CHARGE, LocalDateTime.now()));
         //when
         UserPointUpdateResponse response = userService.chargePointPessimisticLock(user.getId(), chargePoint);
