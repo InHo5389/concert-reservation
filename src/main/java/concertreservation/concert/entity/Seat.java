@@ -18,6 +18,8 @@ public class Seat {
 
     private Long concertScheduleId;
     private String seatNumber;
+
+    @Enumerated(value = EnumType.STRING)
     private SeatStatus seatStatus;
     private int seatPrice;
 

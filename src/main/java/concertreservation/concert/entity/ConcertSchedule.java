@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -21,15 +20,11 @@ public class ConcertSchedule {
 
     private Long concertId;
     private LocalDate concertDate;
-    private String startTime;
-    private String endTime;
 
-    public static ConcertSchedule create(Long concertId, LocalDate concertDate, String startTime, String endTime) {
+    public static ConcertSchedule create(Long concertId, LocalDate concertDate) {
         ConcertSchedule concertSchedule = new ConcertSchedule();
         concertSchedule.concertId = concertId;
         concertSchedule.concertDate = concertDate;
-        concertSchedule.startTime = startTime;
-        concertSchedule.endTime = endTime;
         return concertSchedule;
     }
 }
