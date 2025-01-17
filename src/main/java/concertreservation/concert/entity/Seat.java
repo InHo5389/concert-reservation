@@ -31,4 +31,12 @@ public class Seat {
         seat.seatPrice = seatPrice;
         return seat;
     }
+
+    public boolean isAvailableSeat(){
+        return this.seatStatus == SeatStatus.AVAILABLE;
+    }
+
+    public void updateSeatStatus(SeatStatus seatStatus){
+        this.seatStatus = SeatStatus.RESERVED;
+    }
 }
