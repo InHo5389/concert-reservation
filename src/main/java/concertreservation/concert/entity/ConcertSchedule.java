@@ -2,6 +2,7 @@ package concertreservation.concert.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,12 @@ public class ConcertSchedule {
 
     private Long concertId;
     private LocalDate concertDate;
+
+    @Builder
+    public ConcertSchedule(Long concertId, LocalDate concertDate) {
+        this.concertId = concertId;
+        this.concertDate = concertDate;
+    }
 
     public static ConcertSchedule create(Long concertId, LocalDate concertDate) {
         ConcertSchedule concertSchedule = new ConcertSchedule();

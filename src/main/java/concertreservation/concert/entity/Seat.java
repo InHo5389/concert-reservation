@@ -23,6 +23,16 @@ public class Seat {
     private SeatStatus seatStatus;
     private int seatPrice;
 
+    @Version
+    private Long version;
+
+    public Seat(Long concertScheduleId, String seatNumber, SeatStatus seatStatus, int seatPrice) {
+        this.concertScheduleId = concertScheduleId;
+        this.seatNumber = seatNumber;
+        this.seatStatus = seatStatus;
+        this.seatPrice = seatPrice;
+    }
+
     public static Seat create(Long concertScheduleId, String seatNumber, int seatPrice) {
         Seat seat = new Seat();
         seat.concertScheduleId = concertScheduleId;
@@ -37,6 +47,6 @@ public class Seat {
     }
 
     public void updateSeatStatus(SeatStatus seatStatus){
-        this.seatStatus = SeatStatus.RESERVED;
+        this.seatStatus = seatStatus;
     }
 }

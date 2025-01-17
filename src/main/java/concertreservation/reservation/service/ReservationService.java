@@ -35,12 +35,41 @@ public class ReservationService {
                 .orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_CONCERT_SCHEDULE));
         Concert concert = concertRepository.findById(concertSchedule.getConcertId())
                 .orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_CONCERT));
-        Seat seat = seatRepository.findByIdAndConcertScheduleId(seatId, concertScheduleId)
-                .orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUNT_CONCERT_SCHEDULE_SEAT));
+        Seat seat = seatRepository.findByIdWithOptimisticLock(seatId)
+                .orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_CONCERT_SEAT));
 
+        if (!seat.getConcertScheduleId().equals(concertScheduleId)){
+            throw new CustomGlobalException(ErrorType.NOT_FOUNT_CONCERT_SCHEDULE_SEAT);
+        }
 
         if (!seat.isAvailableSeat()) {
-            throw new CustomGlobalException(ErrorType.NOT_AVAILABLE_SEAT);
+            throw new CustomGlobalException(ErrorType.ALREADY_RESERVED_SEAT);
+        }
+
+        Reservation reservation = Reservation.create(userId, seatId, seat.getSeatPrice(),concert.getTitle(),seat.getSeatNumber());
+        reservationRepository.save(reservation);
+        seat.updateSeatStatus(SeatStatus.RESERVED);
+
+        return ReservationResponse.from(reservation,concert,concertSchedule,user,seat);
+    }
+
+    @Transactional
+    public ReservationResponse reservationPessimistic(Long userId, Long concertScheduleId, Long seatId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_USER));
+        ConcertSchedule concertSchedule = concertScheduleRepository.findById(concertScheduleId)
+                .orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_CONCERT_SCHEDULE));
+        Concert concert = concertRepository.findById(concertSchedule.getConcertId())
+                .orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_CONCERT));
+        Seat seat = seatRepository.findByIdWithPessimistic(seatId)
+                .orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_CONCERT_SEAT));
+
+        if (!seat.getConcertScheduleId().equals(concertScheduleId)){
+            throw new CustomGlobalException(ErrorType.NOT_FOUNT_CONCERT_SCHEDULE_SEAT);
+        }
+
+        if (!seat.isAvailableSeat()) {
+            throw new CustomGlobalException(ErrorType.ALREADY_RESERVED_SEAT);
         }
 
         Reservation reservation = Reservation.create(userId, seatId, seat.getSeatPrice(),concert.getTitle(),seat.getSeatNumber());

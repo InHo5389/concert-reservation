@@ -5,6 +5,8 @@ import concertreservation.reservation.service.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class ReservationRepositoryImpl implements ReservationRepository {
@@ -14,5 +16,10 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         return reservationJpaRepository.save(reservation);
+    }
+
+    @Override
+    public Optional<Reservation> findBySeatId(Long seatId) {
+        return reservationJpaRepository.findBySeatId(seatId);
     }
 }

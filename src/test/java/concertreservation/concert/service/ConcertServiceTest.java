@@ -88,11 +88,11 @@ class ConcertServiceTest {
         ConcertSchedule concertSchedule = new ConcertSchedule(1L, concertId, firstDate);
 
         List<Seat> seats = List.of(
-                new Seat(1L, concertScheduleId, "1", SeatStatus.AVAILABLE, 50000),
-                new Seat(2L, concertScheduleId, "10", SeatStatus.AVAILABLE, 50000),
-                new Seat(3L, concertScheduleId, "15", SeatStatus.AVAILABLE, 50000),
-                new Seat(4L, concertScheduleId, "19", SeatStatus.AVAILABLE, 50000),
-                new Seat(5L, concertScheduleId, "20", SeatStatus.AVAILABLE, 50000)
+                new Seat(1L, concertScheduleId, "1", SeatStatus.AVAILABLE, 50000,null),
+                new Seat(2L, concertScheduleId, "10", SeatStatus.AVAILABLE, 50000,null),
+                new Seat(3L, concertScheduleId, "15", SeatStatus.AVAILABLE, 50000,null),
+                new Seat(4L, concertScheduleId, "19", SeatStatus.AVAILABLE, 50000,null),
+                new Seat(5L, concertScheduleId, "20", SeatStatus.AVAILABLE, 50000,null)
         );
         given(concertScheduleRepository.findById(concertScheduleId))
                 .willReturn(Optional.of(concertSchedule));

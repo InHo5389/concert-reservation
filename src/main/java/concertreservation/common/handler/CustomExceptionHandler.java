@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -20,6 +21,16 @@ public class CustomExceptionHandler {
         return ResponseEntity
                 .status(httpStatus.value())
                 .body(new ExceptionResponse(httpStatus.value(), httpStatus, e.getMessage()));
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<?> apiExceptionHandler(ObjectOptimisticLockingFailureException e) {
+        ErrorType errorType = ErrorType.ALREADY_RESERVED_SEAT;
+        HttpStatus httpStatus = HttpStatus.valueOf(errorType.getStatus());
+
+        return ResponseEntity
+                .status(httpStatus.value())
+                .body(new ExceptionResponse(httpStatus.value(), httpStatus, errorType.getMessage()));
     }
 
     @Getter
