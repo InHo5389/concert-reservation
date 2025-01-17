@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface ConcertScheduleRepository {
     List<ConcertSchedule> findByConcertId(Long concertId);
     Optional<ConcertSchedule> findById(Long concertScheduleId);
+    ConcertSchedule save(ConcertSchedule concertSchedule);
 }

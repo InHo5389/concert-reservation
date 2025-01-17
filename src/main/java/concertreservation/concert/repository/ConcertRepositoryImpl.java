@@ -17,4 +17,9 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     public Optional<Concert> findById(Long concertId) {
         return concertJpaRepository.findById(concertId);
     }
+
+    @Override
+    public Concert save(Concert concert) {
+        return concertJpaRepository.save(concert);
+    }
 }
