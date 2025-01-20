@@ -1,5 +1,7 @@
 package concertreservation.user.service.entity;
 
+import concertreservation.common.exception.CustomGlobalException;
+import concertreservation.common.exception.ErrorType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,6 +46,9 @@ public class User {
     }
 
     public void decreasePoint(int point) {
+        if (this.point < point) {
+            throw new CustomGlobalException(ErrorType.NOT_ENOUGH_POINT);
+        }
         this.point -= point;
     }
 }

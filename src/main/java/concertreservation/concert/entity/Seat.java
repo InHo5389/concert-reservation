@@ -1,5 +1,7 @@
 package concertreservation.concert.entity;
 
+import concertreservation.common.exception.CustomGlobalException;
+import concertreservation.common.exception.ErrorType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,6 +42,15 @@ public class Seat {
         seat.seatStatus = SeatStatus.AVAILABLE;
         seat.seatPrice = seatPrice;
         return seat;
+    }
+
+    public void validateSeatAvailability(Long scheduleId) {
+        if (!this.concertScheduleId.equals(scheduleId)) {
+            throw new CustomGlobalException(ErrorType.NOT_FOUNT_CONCERT_SCHEDULE_SEAT);
+        }
+        if (!isAvailableSeat()) {
+            throw new CustomGlobalException(ErrorType.ALREADY_RESERVED_SEAT);
+        }
     }
 
     public boolean isAvailableSeat(){

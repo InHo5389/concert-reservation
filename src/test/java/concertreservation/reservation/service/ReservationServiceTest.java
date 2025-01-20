@@ -123,4 +123,22 @@ class ReservationServiceTest {
                 .isInstanceOf(CustomGlobalException.class)
                 .hasMessage(ErrorType.EXPIRED_RESERVATION.getMessage());
     }
+
+    @Test
+    @DisplayName("유저가 포인트가 1000있고 결제할 콘서트 좌석 가격이 10000일 경우 예외가 발생한다.")
+    void test(){
+        //given
+        LocalDateTime now = LocalDateTime.now();
+        long userId = 1L;
+        Reservation reservation = new Reservation(1L, userId, 1L, "제목1", "A1", 10000, ReservationStatus.RESERVED, now.plusMinutes(1), now, now);
+        given(reservationRepository.findByIdWithPessimisticLock(reservation.getId()))
+                .willReturn(Optional.of(reservation));
+        given(userRepository.findByIdWithPessimisticLock(userId))
+                .willReturn(Optional.of(new User(userId, "이름1", "번호1", 1000)));
+        //when
+        //then
+        assertThatThrownBy(() -> reservationService.payment(reservation.getId()))
+                .isInstanceOf(CustomGlobalException.class)
+                .hasMessage(ErrorType.NOT_ENOUGH_POINT.getMessage());
+    }
 }
