@@ -2,6 +2,7 @@ package concertreservation.reservation.controller;
 
 import concertreservation.reservation.controller.request.ConcertSeatReservationRequest;
 import concertreservation.reservation.service.ReservationService;
+import concertreservation.reservation.service.response.PaymentResponse;
 import concertreservation.reservation.service.response.ReservationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,5 +18,10 @@ public class ReservationController {
     @PostMapping("/concerts/reservation")
     public ReservationResponse reservation(@RequestBody ConcertSeatReservationRequest request){
         return reservationService.reservation(request.getUserId(), request.getConcertScheduleId(), request.getSeatId());
+    }
+
+    @PostMapping("/concerts/payment")
+    public PaymentResponse payment(@RequestBody Long reservationId){
+        return reservationService.payment(reservationId);
     }
 }

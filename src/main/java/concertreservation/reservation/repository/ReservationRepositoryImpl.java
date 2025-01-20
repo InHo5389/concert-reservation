@@ -22,4 +22,14 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     public Optional<Reservation> findBySeatId(Long seatId) {
         return reservationJpaRepository.findBySeatId(seatId);
     }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return reservationJpaRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Reservation> findByIdWithPessimisticLock(Long reservationId) {
+        return reservationJpaRepository.findByIdWithPessimisticLock(reservationId);
+    }
 }

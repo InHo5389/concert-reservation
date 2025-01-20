@@ -1,14 +1,12 @@
 package concertreservation.user.service.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "users")
 public class User {
 
@@ -19,9 +17,6 @@ public class User {
     private String name;
     private String phoneNumber;
     private int point;
-
-//    @Version
-    private Long version;
 
     public User(String name, String phoneNumber, int point) {
         this.name = name;
@@ -36,11 +31,12 @@ public class User {
         this.point = point;
     }
 
-    public static void create(String name, String phoneNumber, int point) {
+    public static User create(String name, String phoneNumber, int point) {
         User user = new User();
         user.name = name;
         user.phoneNumber = phoneNumber;
         user.point = point;
+        return user;
     }
 
     public void chargePoint(int point) {

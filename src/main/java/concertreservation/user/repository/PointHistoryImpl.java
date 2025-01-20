@@ -19,6 +19,11 @@ public class PointHistoryImpl implements PointHistoryRepository {
     }
 
     @Override
+    public Optional<PointHistory> findByUserId(Long id) {
+        return pointHistoryJpaRepository.findByUserId(id);
+    }
+
+    @Override
     public Optional<PointHistory> findById(Long id) {
         return pointHistoryJpaRepository.findById(id);
     }
