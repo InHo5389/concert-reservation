@@ -9,6 +9,8 @@ import concertreservation.concert.entity.SeatStatus;
 import concertreservation.concert.service.ConcertRepository;
 import concertreservation.concert.service.ConcertScheduleRepository;
 import concertreservation.concert.service.SeatRepository;
+import concertreservation.reservation.entity.Reservation;
+import concertreservation.reservation.entity.ReservationStatus;
 import concertreservation.reservation.service.response.ReservationResponse;
 import concertreservation.user.service.UserRepository;
 import concertreservation.user.service.entity.User;
@@ -20,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -89,5 +92,35 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.reservation(userId, concertScheduleId, seatId))
                 .isInstanceOf(CustomGlobalException.class)
                 .hasMessage(ErrorType.ALREADY_RESERVED_SEAT.getMessage());
+    }
+
+    @Test
+    @DisplayName("결제 시 예약 상태가 PAID인 경우 예외가 발생한다.")
+    void paymentFailWhenAlreadyPaid() {
+        //given
+        LocalDateTime now = LocalDateTime.now();
+        Reservation reservation = new Reservation(1L, 1L, 1L, "제목1", "A1", 5000, ReservationStatus.PAID, now.plusMinutes(1), now, now);
+        given(reservationRepository.findByIdWithPessimisticLock(reservation.getId()))
+                .willReturn(Optional.of(reservation));
+        //when
+        //then
+        assertThatThrownBy(() -> reservationService.payment(reservation.getId()))
+                .isInstanceOf(CustomGlobalException.class)
+                .hasMessage(ErrorType.ALREADY_PAID_SEAT.getMessage());
+    }
+
+    @Test
+    @DisplayName("결제 시 예약 만료 시간이 지나면 예외가 발생한다.")
+    void paymentFailWhenAfterExpiredAt() {
+        //given
+        LocalDateTime now = LocalDateTime.now();
+        Reservation reservation = new Reservation(1L, 1L, 1L, "제목1", "A1", 5000, ReservationStatus.RESERVED, now.minusDays(1), now, now);
+        given(reservationRepository.findByIdWithPessimisticLock(reservation.getId()))
+                .willReturn(Optional.of(reservation));
+        //when
+        //then
+        assertThatThrownBy(() -> reservationService.payment(reservation.getId()))
+                .isInstanceOf(CustomGlobalException.class)
+                .hasMessage(ErrorType.EXPIRED_RESERVATION.getMessage());
     }
 }

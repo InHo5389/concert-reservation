@@ -7,6 +7,8 @@ import concertreservation.concert.entity.SeatStatus;
 import concertreservation.concert.service.ConcertRepository;
 import concertreservation.concert.service.ConcertScheduleRepository;
 import concertreservation.concert.service.SeatRepository;
+import concertreservation.reservation.entity.Reservation;
+import concertreservation.reservation.service.response.PaymentResponse;
 import concertreservation.user.service.UserRepository;
 import concertreservation.user.service.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,7 +78,7 @@ class ReservationServiceConcurrencyTest {
                 try {
                     reservationService.reservation(userId, concertSchedule.getId(), seat.getId());
                     successfulReservations.incrementAndGet();
-                }finally {
+                } finally {
                     latch.countDown();
                 }
             });
@@ -110,7 +112,7 @@ class ReservationServiceConcurrencyTest {
                 try {
                     reservationService.reservationPessimistic(userId, concertSchedule.getId(), seat.getId());
                     successfulReservations.incrementAndGet();
-                }finally {
+                } finally {
                     latch.countDown();
                 }
             });
@@ -156,5 +158,34 @@ class ReservationServiceConcurrencyTest {
         //then
         assertThat(successfulReservations.get()).isEqualTo(1);
         assertThat(failedReservations.get()).isEqualTo(numberOfThreads - 1);
+    }
+
+    @Test
+    @DisplayName("유저1이 500원짜리 100번 동시 요청해도 1번 결제가 되어야 한다.")
+    void payment() throws InterruptedException {
+        //given
+        User savedUser = userRepository.save(User.create("유저1", "번호1", 10000));
+        Long seatId = 1L;
+        int reservationPoint = 500;
+        Reservation reservation = Reservation.create(savedUser.getId(), seatId, reservationPoint, "아이유 콘서트", "A1");
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            executorService.submit(() -> {
+                try {
+                    reservationService.payment(savedReservation.getId());
+                }finally {
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await();
+        //when
+        //then
+        userRepository.findById(savedUser.getId()).get();
+        assertThat(userRepository.findById(savedUser.getId()).get().getPoint()).isEqualTo(9500);
     }
 }
