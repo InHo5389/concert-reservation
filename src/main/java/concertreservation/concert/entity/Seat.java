@@ -46,7 +46,7 @@ public class Seat {
 
     public void validateSeatAvailability(Long scheduleId) {
         if (!this.concertScheduleId.equals(scheduleId)) {
-            throw new CustomGlobalException(ErrorType.NOT_FOUNT_CONCERT_SCHEDULE_SEAT);
+            throw new CustomGlobalException(ErrorType.NOT_FOUND_CONCERT_SCHEDULE_SEAT);
         }
         if (!isAvailableSeat()) {
             throw new CustomGlobalException(ErrorType.ALREADY_RESERVED_SEAT);
