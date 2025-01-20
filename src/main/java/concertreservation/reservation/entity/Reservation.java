@@ -1,5 +1,7 @@
 package concertreservation.reservation.entity;
 
+import concertreservation.common.exception.CustomGlobalException;
+import concertreservation.common.exception.ErrorType;
 import concertreservation.concert.entity.Concert;
 import concertreservation.concert.entity.ConcertSchedule;
 import concertreservation.reservation.service.response.ReservationResponse;
@@ -48,5 +50,20 @@ public class Reservation {
         reservation.createdAt = now;
         reservation.modifiedAt = now;
         return reservation;
+    }
+
+    public void changeReservationStatus(ReservationStatus reservationStatus){
+        this.reservationStatus = reservationStatus;
+        this.modifiedAt = LocalDateTime.now();
+    }
+
+    public void validReservation(){
+        if (this.reservationStatus == ReservationStatus.PAID){
+            throw new CustomGlobalException(ErrorType.ALREADY_PAID_SEAT);
+        }
+
+        if (this.expiredAt.isBefore(LocalDateTime.now())){
+            throw new CustomGlobalException(ErrorType.EXPIRED_RESERVATION);
+        }
     }
 }
