@@ -14,21 +14,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -67,12 +61,9 @@ class ReservationServiceConcurrencyTest {
         //given
         long startTime = System.currentTimeMillis();
 
-        long concertId = 1L;
-        long concertScheduleId = 1L;
-        long seatId = 1L;
-        concertRepository.save(new Concert("콘서트1", "에스파", "https://"));
-        concertScheduleRepository.save(new ConcertSchedule(concertId, LocalDate.of(2025, 1, 15)));
-        seatRepository.save(new Seat(concertScheduleId, "A1", SeatStatus.AVAILABLE, 50000));
+        Concert concert = concertRepository.save(new Concert("콘서트1", "에스파", "https://"));
+        ConcertSchedule concertSchedule = concertScheduleRepository.save(new ConcertSchedule(concert.getId(), LocalDate.of(2025, 1, 15)));
+        Seat seat = seatRepository.save(new Seat(concertSchedule.getId(), "A1", SeatStatus.AVAILABLE, 50000));
 
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
@@ -83,7 +74,7 @@ class ReservationServiceConcurrencyTest {
             Long userId = (long) i;
             executorService.submit(() -> {
                 try {
-                    reservationService.reservation(userId, concertScheduleId, seatId);
+                    reservationService.reservation(userId, concertSchedule.getId(), seat.getId());
                     successfulReservations.incrementAndGet();
                 }finally {
                     latch.countDown();
@@ -104,12 +95,9 @@ class ReservationServiceConcurrencyTest {
         //given
         long startTime = System.currentTimeMillis();
 
-        long concertId = 1L;
-        long concertScheduleId = 1L;
-        long seatId = 1L;
-        concertRepository.save(new Concert("콘서트1", "에스파", "https://"));
-        concertScheduleRepository.save(new ConcertSchedule(concertId, LocalDate.of(2025, 1, 15)));
-        seatRepository.save(new Seat(concertScheduleId, "A1", SeatStatus.AVAILABLE, 50000));
+        Concert concert = concertRepository.save(new Concert("콘서트1", "에스파", "https://"));
+        ConcertSchedule concertSchedule = concertScheduleRepository.save(new ConcertSchedule(concert.getId(), LocalDate.of(2025, 1, 15)));
+        Seat seat = seatRepository.save(new Seat(concertSchedule.getId(), "A1", SeatStatus.AVAILABLE, 50000));
 
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
@@ -120,7 +108,7 @@ class ReservationServiceConcurrencyTest {
             Long userId = (long) i;
             executorService.submit(() -> {
                 try {
-                    reservationService.reservationPessimistic(userId, concertScheduleId, seatId);
+                    reservationService.reservationPessimistic(userId, concertSchedule.getId(), seat.getId());
                     successfulReservations.incrementAndGet();
                 }finally {
                     latch.countDown();
@@ -139,12 +127,9 @@ class ReservationServiceConcurrencyTest {
     @DisplayName("유저 100명이 하나의 콘서트를 예약할때 예외가 발생해야 한다")
     void reservationConcurrencyWithOptimistic1() throws InterruptedException {
         //given
-        long concertId = 1L;
-        long concertScheduleId = 1L;
-        long seatId = 1L;
-        concertRepository.save(new Concert("콘서트1", "에스파", "https://"));
-        concertScheduleRepository.save(new ConcertSchedule(concertId, LocalDate.of(2025, 1, 15)));
-        seatRepository.save(new Seat(concertScheduleId, "A1", SeatStatus.AVAILABLE, 50000));
+        Concert concert = concertRepository.save(new Concert("콘서트1", "에스파", "https://"));
+        ConcertSchedule concertSchedule = concertScheduleRepository.save(new ConcertSchedule(concert.getId(), LocalDate.of(2025, 1, 15)));
+        Seat seat = seatRepository.save(new Seat(concertSchedule.getId(), "A1", SeatStatus.AVAILABLE, 50000));
 
 
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
@@ -156,7 +141,7 @@ class ReservationServiceConcurrencyTest {
             Long userId = (long) i;
             executorService.submit(() -> {
                 try {
-                    reservationService.reservation(userId, concertScheduleId, seatId);
+                    reservationService.reservation(userId, concertSchedule.getId(), seat.getId());
                     successfulReservations.incrementAndGet();
                 } catch (Exception e) {
                     failedReservations.incrementAndGet();
