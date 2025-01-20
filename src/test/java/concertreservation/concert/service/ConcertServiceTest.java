@@ -7,7 +7,7 @@ import concertreservation.concert.entity.Seat;
 import concertreservation.concert.entity.SeatStatus;
 import concertreservation.concert.service.response.ConcertAvailableDateResponse;
 import concertreservation.concert.service.response.ConcertAvailableSeatResponse;
-import org.assertj.core.api.Assertions;
+import concertreservation.concert.service.response.ConcertListResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -104,5 +104,102 @@ class ConcertServiceTest {
         assertThat(response.getSeatNumber().size()).isEqualTo(5);
         assertThat(response.getSeatNumber())
                 .containsOnly("1", "10", "15", "19", "20");
+    }
+
+    @Test
+    @DisplayName("pageSize가 10이고 콘서트가 4개 저장되어 있다면 첫 페이지 콘서트 목록은 4개가 조회한다.")
+    void concertLists(){
+        //given
+        Long pageSize = 10L;
+        List<Concert> concerts = List.of(
+                new Concert("콘서트1", "가수1", "이미지1"),
+                new Concert("콘서트2", "가수2", "이미지2"),
+                new Concert("콘서트3", "가수3", "이미지3"),
+                new Concert("콘서트4", "가수4", "이미지4")
+        );
+
+        given(concertRepository.findAllInfiniteScroll(pageSize))
+                .willReturn(concerts);
+        //when
+        ConcertListResponse response = concertService.concerts(pageSize, null);
+        //then
+        assertThat(response.getConcertInfos()).hasSize(4);
+        assertThat(response.getConcertInfos().get(0)).extracting(
+                "title","name","imageUrl"
+        ).containsExactlyInAnyOrder("콘서트1", "가수1", "이미지1");
+        assertThat(response.getConcertInfos().get(1)).extracting(
+                "title","name","imageUrl"
+        ).containsExactlyInAnyOrder("콘서트2", "가수2", "이미지2");
+    }
+
+    @Test
+    @DisplayName("pageSize 2,3,5 별 콘서트 목록 조회하면 pageSize별로 조회되어야 한다.")
+    void getConcertListsByPageSize(){
+        //given
+        List<Concert> allConcerts = List.of(
+                new Concert("콘서트1", "가수1", "이미지1"),
+                new Concert("콘서트2", "가수2", "이미지2"),
+                new Concert("콘서트3", "가수3", "이미지3"),
+                new Concert("콘서트4", "가수4", "이미지4"),
+                new Concert("콘서트5", "가수5", "이미지5")
+        );
+
+        given(concertRepository.findAllInfiniteScroll(2L))
+                .willReturn(allConcerts.subList(0, 2));
+
+        given(concertRepository.findAllInfiniteScroll(3L))
+                .willReturn(allConcerts.subList(0, 3));
+
+        given(concertRepository.findAllInfiniteScroll(5L))
+                .willReturn(allConcerts);
+
+        //when & then
+        ConcertListResponse response2 = concertService.concerts(2L, null);
+        assertThat(response2.getConcertInfos()).hasSize(2);
+        assertThat(response2.getConcertInfos())
+                .extracting("title")
+                .containsExactly("콘서트1", "콘서트2");
+
+        ConcertListResponse response3 = concertService.concerts(3L, null);
+        assertThat(response3.getConcertInfos()).hasSize(3);
+        assertThat(response3.getConcertInfos())
+                .extracting("title")
+                .containsExactly("콘서트1", "콘서트2", "콘서트3");
+
+        ConcertListResponse response5 = concertService.concerts(5L, null);
+        assertThat(response5.getConcertInfos()).hasSize(5);
+        assertThat(response5.getConcertInfos())
+                .extracting("title")
+                .containsExactly("콘서트1", "콘서트2", "콘서트3", "콘서트4", "콘서트5");
+    }
+
+    @Test
+    @DisplayName("lastConcertId를 사용한 다음 페이지 콘서트 목록 조회")
+    void getNextPageConcertList() {
+        //given
+        Long pageSize = 10L;
+        Long lastConcertId = 2L;
+
+        List<Concert> concerts = List.of(
+                new Concert(1L, "콘서트1", "가수1", "이미지1"),
+                new Concert(2L, "콘서트2", "가수2", "이미지2"),
+                new Concert(3L, "콘서트3", "가수3", "이미지3"),
+                new Concert(4L, "콘서트4", "가수4", "이미지4")
+        );
+
+        given(concertRepository.findAllInfiniteScroll(pageSize, 2L))
+                .willReturn(concerts.subList(2, 4));
+
+        //when
+        ConcertListResponse response = concertService.concerts(pageSize, lastConcertId);
+
+        //then
+        assertThat(response.getConcertInfos()).hasSize(2);
+        assertThat(response.getConcertInfos())
+                .extracting("id", "title")
+                .containsExactly(
+                        tuple(3L, "콘서트3"),
+                        tuple(4L, "콘서트4")
+                );
     }
 }
