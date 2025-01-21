@@ -11,7 +11,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "seats")
+@Table(name = "seats", indexes = {
+        @Index(name = "idx_seat_schedule_status",
+                columnList = "concert_schedule_id,seat_status")
+})
 public class Seat {
 
     @Id
@@ -53,11 +56,11 @@ public class Seat {
         }
     }
 
-    public boolean isAvailableSeat(){
+    public boolean isAvailableSeat() {
         return this.seatStatus == SeatStatus.AVAILABLE;
     }
 
-    public void updateSeatStatus(SeatStatus seatStatus){
+    public void updateSeatStatus(SeatStatus seatStatus) {
         this.seatStatus = seatStatus;
     }
 }
