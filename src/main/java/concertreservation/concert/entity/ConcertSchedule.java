@@ -12,7 +12,10 @@ import java.time.LocalDate;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "concert_schedules")
+@Table(name = "concert_schedules", indexes = {
+        @Index(name = "idx_concert_schedule_concert_id",
+                columnList = "concert_id")
+})
 public class ConcertSchedule {
 
     @Id
