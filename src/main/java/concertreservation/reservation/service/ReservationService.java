@@ -9,6 +9,7 @@ import concertreservation.reservation.service.component.dto.ReservationContext;
 import concertreservation.reservation.service.response.PaymentResponse;
 import concertreservation.reservation.service.response.ReservationResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
 
     @Transactional
+    @CacheEvict(value = "concert::seat", key = "#concertScheduleId")
     public ReservationResponse reservation(Long userId, Long concertScheduleId, Long seatId) {
         ReservationContext context = reservationProcessor.prepare(userId, concertScheduleId, seatId);
         Reservation reservation = saveReservation(context);

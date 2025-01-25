@@ -1,14 +1,12 @@
 package concertreservation.concert.controller;
 
+import concertreservation.concert.controller.request.AddScheduleRequest;
 import concertreservation.concert.service.ConcertService;
 import concertreservation.concert.service.response.ConcertAvailableDateResponse;
 import concertreservation.concert.service.response.ConcertAvailableSeatResponse;
 import concertreservation.concert.service.response.ConcertListResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,5 +30,10 @@ public class ConcertController {
     @GetMapping("/concerts/seats/{concertScheduleId}")
     public ConcertAvailableSeatResponse availableSeat(@PathVariable Long concertScheduleId) {
         return concertService.availableSeat(concertScheduleId);
+    }
+
+    @PostMapping("/admin/concerts/{concertId}/schedules")
+    public void updateSchedule(@PathVariable Long concertId, @RequestBody AddScheduleRequest request){
+        concertService.updateSchedule(concertId,request.getScheduleDate());
     }
 }
