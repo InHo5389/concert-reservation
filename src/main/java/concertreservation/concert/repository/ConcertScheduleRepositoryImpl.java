@@ -5,6 +5,7 @@ import concertreservation.concert.service.ConcertScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,5 +28,10 @@ public class ConcertScheduleRepositoryImpl implements ConcertScheduleRepository 
     @Override
     public ConcertSchedule save(ConcertSchedule concertSchedule) {
         return concertScheduleJpaRepository.save(concertSchedule);
+    }
+
+    @Override
+    public boolean existsByConcertIdAndConcertDate(Long concertId, LocalDate concertDate) {
+        return concertScheduleJpaRepository.existsByConcertIdAndConcertDate(concertId, concertDate);
     }
 }

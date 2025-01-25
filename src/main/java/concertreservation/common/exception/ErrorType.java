@@ -16,7 +16,9 @@ public enum ErrorType {
     NOT_FOUND_RESERVATION(400, "예약된 좌석이 없습니다."),
     ALREADY_PAID_SEAT(400, "이미 결제된 좌석입니다."),
     EXPIRED_RESERVATION(400, "예약 만료 시간이 지났습니다. 다시 예약하여 주세요"),
-    NOT_ENOUGH_POINT(400,"포인트가 부족합니다. 충전후 결제하여 주세요.")
+    NOT_ENOUGH_POINT(400,"포인트가 부족합니다. 충전후 결제하여 주세요."),
+    JSON_PARSING_FAILED(500,"json 변환에 실패하였습니다."),
+    ALREADY_EXIST_SCHEDULE(400,"이미 콘서트 스케줄이 존재합니다.")
     ;
 
     private final int status;
