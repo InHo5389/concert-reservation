@@ -5,6 +5,7 @@ import concertreservation.concert.service.ConcertService;
 import concertreservation.concert.service.response.ConcertAvailableDateResponse;
 import concertreservation.concert.service.response.ConcertAvailableSeatResponse;
 import concertreservation.concert.service.response.ConcertListResponse;
+import concertreservation.token.interceptor.WaitingTokenRequired;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +23,13 @@ public class ConcertController {
         return concertService.concerts(pageSize,lastConcertId);
     }
 
+    @WaitingTokenRequired
     @GetMapping("/concerts/{concertId}/schedule")
     public ConcertAvailableDateResponse availableDate(@PathVariable Long concertId) {
         return concertService.availableDate(concertId);
     }
 
+    @WaitingTokenRequired
     @GetMapping("/concerts/seats/{concertScheduleId}")
     public ConcertAvailableSeatResponse availableSeat(@PathVariable Long concertScheduleId) {
         return concertService.availableSeat(concertScheduleId);
