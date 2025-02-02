@@ -1,6 +1,7 @@
 package concertreservation.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import concertreservation.token.interceptor.WaitingTokenInterceptor;
 import concertreservation.user.controller.request.PointChargeRequest;
 import concertreservation.user.service.UserService;
 import concertreservation.user.service.entity.User;
@@ -28,6 +29,9 @@ class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private WaitingTokenInterceptor waitingTokenInterceptor;
 
     @Test
     @DisplayName("포인트를 조회한다.")

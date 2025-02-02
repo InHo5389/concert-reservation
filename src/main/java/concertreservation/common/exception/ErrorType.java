@@ -18,7 +18,13 @@ public enum ErrorType {
     EXPIRED_RESERVATION(400, "예약 만료 시간이 지났습니다. 다시 예약하여 주세요"),
     NOT_ENOUGH_POINT(400,"포인트가 부족합니다. 충전후 결제하여 주세요."),
     JSON_PARSING_FAILED(500,"json 변환에 실패하였습니다."),
-    ALREADY_EXIST_SCHEDULE(400,"이미 콘서트 스케줄이 존재합니다.")
+    ALREADY_EXIST_SCHEDULE(400,"이미 콘서트 스케줄이 존재합니다."),
+    ALREADY_EXIST_ACTIVE_TOKEN(400,"이미 대기중이거나 활성화된 토큰이 존재합니다."),
+
+    INVALID_TOKEN(400,"유효하지 않은 토큰입니다."),
+    NOT_FOUND_TOKEN(400,"토큰을 찾을 수 없습니다."),
+    EXPIRED_TOKEN(400,"토큰이 만료되었습니다."),
+    TOKEN_NOT_ACTIVE(400,"토큰이 활성화되어 있지 않습니다.")
     ;
 
     private final int status;
