@@ -32,6 +32,9 @@ class ConcertServiceTest {
     private ConcertScheduleRepository concertScheduleRepository;
 
     @Mock
+    private ConcertRedisRepository concertRedisRepository;
+
+    @Mock
     private ConcertRepository concertRepository;
 
     @Mock
