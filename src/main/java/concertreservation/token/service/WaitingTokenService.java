@@ -63,6 +63,12 @@ public class WaitingTokenService {
         return TokenStatusResponse.from(waitingToken, 0L);
     }
 
+    @Transactional(readOnly = true)
+    public WaitingToken getToken(String token){
+        return waitingTokenRepository.findByToken(token)
+                .orElseThrow(() -> new CustomGlobalException(ErrorType.NOT_FOUND_TOKEN));
+    }
+
     @Transactional
     public void updateExpiredTokenStatus() {
 
