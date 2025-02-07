@@ -20,10 +20,11 @@ public class TokenProvider {
 
     private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000; // 24시간
 
-    public String createToken(Long userId) {
+    public String createToken(Long userId,Long concertId) {
         Claims claims = Jwts.claims();
         claims.put("userId", userId);
         claims.put("type", "WAITING_TOKEN");
+        claims.put("concertId",concertId);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -40,6 +41,15 @@ public class TokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.get("userId", Long.class);
+    }
+
+    public Long getConcertIdFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("concertId", Long.class);
     }
 
     private Key getSigningKey() {

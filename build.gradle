@@ -52,6 +52,10 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// test-container
+	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.20.4'
+	testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.20.4'
+
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 }
