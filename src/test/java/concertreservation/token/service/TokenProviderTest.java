@@ -1,6 +1,5 @@
 package concertreservation.token.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,8 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class TokenProviderTest {
@@ -28,8 +26,9 @@ class TokenProviderTest {
     void createToken() {
         //given
         Long userId = 1L;
+        Long concertId = 1L;
         //when
-        String token = tokenProvider.createToken(userId);
+        String token = tokenProvider.createToken(userId,concertId);
         //then
         assertThat(token).isNotNull();
         assertThat(tokenProvider.validateToken(token)).isTrue();
@@ -40,8 +39,9 @@ class TokenProviderTest {
     void createTokenEqualUserId() {
         //given
         Long userId = 1L;
+        Long concertId = 1L;
         //when
-        String token = tokenProvider.createToken(userId);
+        String token = tokenProvider.createToken(userId,concertId);
         //then
         assertThat(token).isNotNull();
         assertThat(tokenProvider.getUserIdFromToken(token)).isEqualTo(userId);

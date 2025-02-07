@@ -1,6 +1,6 @@
 package concertreservation.token.interceptor;
 
-import concertreservation.token.service.WaitingTokenService;
+import concertreservation.token.service.WaitingTokenRedisService;
 import concertreservation.token.service.response.TokenIssueResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,13 +20,13 @@ class WaitingTokenInterceptorTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private WaitingTokenService waitingTokenService;
+    private WaitingTokenRedisService waitingTokenRedisService;
 
     @Test
     @DisplayName("유효한 토큰으로 요청 시 정상 처리되어야 한다")
     void validTokenAccess() throws Exception {
         // given
-        TokenIssueResponse tokenResponse = waitingTokenService.issueToken(1L);
+        TokenIssueResponse tokenResponse = waitingTokenRedisService.issueToken(1L, 1L);
 
         // when & then
         mockMvc.perform(get("/waiting-token/status")
