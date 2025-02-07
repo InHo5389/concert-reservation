@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import concertreservation.common.exception.CustomGlobalException;
 import concertreservation.common.exception.ErrorResponse;
 import concertreservation.common.exception.ErrorType;
-import concertreservation.token.entity.TokenStatus;
-import concertreservation.token.entity.WaitingToken;
 import concertreservation.token.service.TokenProvider;
-import concertreservation.token.service.WaitingTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +20,6 @@ public class WaitingTokenInterceptor implements HandlerInterceptor {
 
     private final TokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
-    private final WaitingTokenService waitingTokenService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -59,16 +55,6 @@ public class WaitingTokenInterceptor implements HandlerInterceptor {
     private void validateQueueToken(String token) {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new CustomGlobalException(ErrorType.INVALID_TOKEN);
-        }
-
-        WaitingToken waitingToken = waitingTokenService.getToken(token);
-
-        if (waitingToken.getStatus() == TokenStatus.EXPIRED) {
-            throw new CustomGlobalException(ErrorType.EXPIRED_TOKEN);
-        }
-
-        if (waitingToken.getStatus() != TokenStatus.ACTIVE) {
-            throw new CustomGlobalException(ErrorType.TOKEN_NOT_ACTIVE);
         }
     }
 

@@ -2,11 +2,15 @@ package concertreservation.token.service.response;
 
 import concertreservation.token.entity.TokenStatus;
 import concertreservation.token.entity.WaitingToken;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class TokenStatusResponse {
 
     private String token;
