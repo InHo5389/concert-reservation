@@ -91,3 +91,25 @@
   <summary>CloudWatch 모니터링 결과</summary>
   <img src="https://github.com/user-attachments/assets/aba87b23-2edf-424d-b233-b7ec69306e73">
 </details>
+
+### MySQL기반 대기열 적용 후
+- TPS: 288
+- 응답시간: 20초
+- EC2 CPU: 99.9%
+- RDS CPU: 95.8%
+<details>
+  <summary>성능 테스트 이미지, CloudWatch 이미지 보기</summary>
+  <img src="https://github.com/user-attachments/assets/2ec0d08b-0c59-4e05-8107-132b8cf83dad"/>
+  <img src="https://github.com/user-attachments/assets/5a5a4e74-3e62-4670-8bbd-29c0d6f09d96"/>
+</details>
+
+### Redis기반 대기열 적용 후 (서버 이중화 포함)
+- TPS: 1,370
+- 응답시간: 2초
+- EC2 CPU: 99.8%
+- RDS CPU: 28.8%
+<details>
+  <summary>성능 테스트 이미지, CloudWatch 이미지 보기</summary>
+  <img src="https://github.com/user-attachments/assets/7c8b0257-d876-4356-ae6b-c014ae52e7c5"/>
+  <img src="https://github.com/user-attachments/assets/268251c0-8679-4854-95f7-38ca35ae5bab"/>
+</details>
